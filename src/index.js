@@ -1,3 +1,5 @@
+import Node from './node.js';
+
 const sampleArray1 = [7, 6, 5, 4, 3, 2, 1];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
@@ -5,38 +7,35 @@ const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 // sort array
 // remove duplicates
 
-// Node class
-class Node {
-  constructor() {
-    this.data;
-    this.left;
-    this.right;
-  }
-}
-
 // Tree class
-
+console.log('Node:', Node);
 class Tree {
   root = null;
 
   /**
-   * @description
-   * @param {Array} array
-   * @return {*}
-   * @memberof Tree
-   */
+     * @description turn array into balanced binary tree full of Node objects appropriately placed.
+
+     * @param {Array}
+     * @return {*} return the level-0 root node object
+     * @memberof Tree
+     */
   buildTree(array) {
     return rootNode;
   }
 
   /**
-     * @description function that takes an array of data and turns it into a
-balanced binary tree full of Node objects appropriately placed. The buildTree function should return the level-0 root node.
-
-     * @param {Array} array
-     * @return {*}
-     * @memberof Tree
-     */
-  preprocess(array) {}
+   * @description
+   * @param {Array} array
+   * @memberof Tree
+   * @return {Array}
+   */
+  preprocess(array) {
+    const uniqueArray = [...new Set(array)];
+    uniqueArray.sort((a, b) => a - b);
+    return uniqueArray;
+  }
 }
 
+const tree1 = new Tree();
+const result = tree1.preprocess(sampleArray1);
+console.log('result:', result);
