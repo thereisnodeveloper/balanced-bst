@@ -34,8 +34,20 @@ class Tree {
     uniqueArray.sort((a, b) => a - b);
     return uniqueArray;
   }
+
+  prettyPrint = (node, prefix = '', isLeft = true) => {
+    if (node === null) {
+      return;
+    }
+    if (node.right !== null) {
+      prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+    }
+    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+    if (node.left !== null) {
+      prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+    }
+  };
 }
 
 const tree1 = new Tree();
-const result = tree1.preprocess(sampleArray1);
-console.log('result:', result);
+// const result = tree1.preprocess(sampleArray1);
