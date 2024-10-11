@@ -15,12 +15,26 @@ class Tree {
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
 
-     * @param {Array}
-     * @return {*} return the level-0 root node object
+     * @param {Array} array
+     * @return {Node} return the level-0 root node object
      * @memberof Tree
      */
   buildTree(array) {
-    return rootNode;
+    const targetArray = this.preprocess(array);
+    // split array in half, find middle
+    const startIndex = 0;
+    const endIndex = targetArray.length - 1;
+    const midIndex = (startIndex + endIndex) / 2;
+    // const root = midIndex
+
+    // base case: reach end of given array
+
+    // recursive case
+    // left subarray
+    // right subarray
+
+    // return rootNode;
+    return
   }
 
   /**
@@ -50,4 +64,6 @@ class Tree {
 }
 
 const tree1 = new Tree();
-// const result = tree1.preprocess(sampleArray1);
+
+const result = tree1.buildTree(sampleArray1);
+console.log('result:', result);
