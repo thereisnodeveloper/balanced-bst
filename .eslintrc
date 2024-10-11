@@ -1,0 +1,25 @@
+{
+    "plugins": [],
+    "extends": [
+      "airbnb-base",
+      "plugin:n/recommended"
+
+    ],
+  
+    // files are handled by loadContent()
+  
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+    },
+    "env": {
+      "es2022": true,
+      "browser": true,
+      "node": true,
+    },
+    "rules": {
+    //   "prefer-arrow-callback": "off",
+    //   "indent": ["error", 2, { "ignoreComments": true }],
+    //   "implicit-arrow-linebreak": "off",
+    },
+  }
