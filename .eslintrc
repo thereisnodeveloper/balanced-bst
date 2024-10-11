@@ -2,7 +2,6 @@
     "plugins": [],
     "extends": [
       "airbnb-base",
-      "plugin:n/recommended"
 
     ],
   
