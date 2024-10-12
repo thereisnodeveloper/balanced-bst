@@ -4,8 +4,26 @@ const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
 class Tree {
-
-
+  insert(value){
+    //start from rootNode
+    //compare value with value of rootNode
+      //if larger, go to right child
+      //if smaller, go to left child
+    
+      //base case
+    //if rootNode=== null (means empty), insert
+    
+  }
+  delete(value){}
+  find(value){}
+  levelOrder(callback){}
+  inOrder(callback){}
+  preOrder(callback){}
+  postOrder(callback){}
+  height(node){}
+  depth(node){}
+  isBalanced(){}
+  rebalance(){}
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
 
