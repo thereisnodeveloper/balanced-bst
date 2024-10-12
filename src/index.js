@@ -28,7 +28,6 @@ class Tree {
       const localEndIndex = typeof endIndex === 'undefined' ? targetArray.length - 1 : endIndex;
       const localMidIndex = (localStartIndex + localEndIndex) / 2;
       const rootNode = new Node(targetArray[localMidIndex]);
-
       // base case: reach end of given array
       if (localEndIndex < localStartIndex) return null;
 
@@ -60,11 +59,11 @@ class Tree {
       return;
     }
     if (node.right !== null) {
-      prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+      this.prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
     }
     console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
     if (node.left !== null) {
-      prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+      this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
     }
   };
 }
@@ -73,3 +72,4 @@ const tree1 = new Tree();
 
 const result = tree1.buildTree(sampleArray1);
 console.log('result:', result);
+tree1.prettyPrint(result)
