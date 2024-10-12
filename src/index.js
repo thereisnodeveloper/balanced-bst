@@ -36,7 +36,7 @@ class Tree {
       // left subarray
       rootNode.left = buildTreeRecurse(targetArray, localStartIndex, localMidIndex - 1);
       // right subarray
-      rootNode.left = buildTreeRecurse(targetArray, localMidIndex + 1, localEndIndex);
+      rootNode.right = buildTreeRecurse(targetArray, localMidIndex + 1, localEndIndex);
 
       return rootNode;
     }
