@@ -4,29 +4,82 @@ const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
 class Tree {
-  constructor(array){
-    this.root = this.buildTree(array)
+  constructor(array) {
+    this.root = this.buildTree(array);
   }
-  insert(value){
-    //start from rootNode
-    //compare value with value of rootNode
-      //if larger, go to right child
-      //if smaller, go to left child
-    
-      //base case
-    //if rootNode=== null (means empty), insert
-    
+
+  insert(value) {
+    // start from rootNode
+    if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
+
+    // compare value with value of rootNode
+    // ignore duplicates
+    if (value === this.localRoot.data) {
+      throw new Error('duplicate value');
+      // TEST
+    }
+
+    const shouldGoLeft = () => {
+      // if larger, go to right child
+      if (value > this.localRoot.data) {
+        return false;
+        this.localRoot = this.localRoot.right;
+        this.insert(value);
+      }
+      // if smaller, go to left child
+
+      return true;
+      this.localRoot = this.localRoot.left;
+      this.insert(value);
+    };
+
+    // base case
+    // FIXME: since I need to link the newly created node as a left/child of the
+    // parent node, I need to run checks BEFORE traversing to the next node
+
+    // if rootNode=== null/undefined (means empty), insert
+    let nodeToGoTo;
+    if (shouldGoLeft()) {
+      nodeToGoTo = this.localRoot.left;
+      if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
+        this.localRoot.left = nodeToGoTo;
+        nodeToGoTo === new Node(value);
+      } else {
+        this.localRoot = nodeToGoTo;
+        this.insert(value);
+      }
+    } else {
+      nodeToGoTo = this.localRoot.right;
+      if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
+        this.localRoot.left = nodeToGoTo;
+        nodeToGoTo === new Node(value);
+      } else {
+        this.localRoot = nodeToGoTo;
+        this.insert(value);
+      }
+    }
   }
-  delete(value){}
-  find(value){}
-  levelOrder(callback){}
-  inOrder(callback){}
-  preOrder(callback){}
-  postOrder(callback){}
-  height(node){}
-  depth(node){}
-  isBalanced(){}
-  rebalance(){}
+
+  delete(value) {}
+
+  find(value) {}
+
+  levelOrder(callback) {}
+
+  inOrder(callback) {}
+
+  preOrder(callback) {}
+
+  postOrder(callback) {}
+
+  height(node) {}
+
+  depth(node) {}
+
+  isBalanced() {}
+
+  rebalance() {}
+
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
 
@@ -35,11 +88,10 @@ class Tree {
      * @memberof Tree
      */
   buildTree(array) {
-
     function buildTreeRecurse(targetArray, startIndex, endIndex) {
       const localStartIndex = typeof startIndex === 'undefined' ? 0 : startIndex;
       const localEndIndex = typeof endIndex === 'undefined' ? targetArray.length - 1 : endIndex;
-      const localMidIndex = Math.floor((localStartIndex + localEndIndex) / 2)
+      const localMidIndex = Math.floor((localStartIndex + localEndIndex) / 2);
       const rootNode = new Node(targetArray[localMidIndex]);
       // base case: reach end of given array
       if (localEndIndex < localStartIndex) return null;
@@ -80,6 +132,5 @@ class Tree {
 }
 
 const tree1 = new Tree(sampleArray2);
-
-tree1.prettyPrint(tree1.root)
-
+tree1.insert(0);
+tree1.prettyPrint(tree1.root);
