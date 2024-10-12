@@ -24,8 +24,8 @@ class Tree {
 
     function buildTreeRecurse(targetArray, startIndex, endIndex) {
       // split array in half, find middle
-      const localStartIndex = typeof startIndex !== 'undefined' ? 0 : startIndex;
-      const localEndIndex = typeof endIndex !== 'undefined' ? targetArray.length - 1 : endIndex;
+      const localStartIndex = typeof startIndex === 'undefined' ? 0 : startIndex;
+      const localEndIndex = typeof endIndex === 'undefined' ? targetArray.length - 1 : endIndex;
       const localMidIndex = (localStartIndex + localEndIndex) / 2;
       const rootNode = new Node(targetArray[localMidIndex]);
 
@@ -40,7 +40,7 @@ class Tree {
 
       return rootNode;
     }
-    buildTreeRecurse(this.preprocess(array));
+    return buildTreeRecurse(this.preprocess(array));
   }
 
   /**
