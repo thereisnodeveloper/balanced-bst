@@ -1,6 +1,7 @@
 import Node from './node.js';
 
-const sampleArray1 = [7, 6, 5, 4, 3, 2, 1];
+const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
+// [1,2,3], 4, [5,6,7]
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
 // pre-process
@@ -8,9 +9,9 @@ const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 // remove duplicates
 
 // Tree class
-console.log('Node:', Node);
+// console.log('Node:', Node);
 class Tree {
-  root = null;
+  // root = null;
 
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
@@ -20,21 +21,26 @@ class Tree {
      * @memberof Tree
      */
   buildTree(array) {
-    const targetArray = this.preprocess(array);
-    // split array in half, find middle
-    const startIndex = 0;
-    const endIndex = targetArray.length - 1;
-    const midIndex = (startIndex + endIndex) / 2;
-    // const root = midIndex
 
-    // base case: reach end of given array
+    function buildTreeRecurse(targetArray, startIndex, endIndex) {
+      // split array in half, find middle
+      const localStartIndex = typeof startIndex !== 'undefined' ? 0 : startIndex;
+      const localEndIndex = typeof endIndex !== 'undefined' ? targetArray.length - 1 : endIndex;
+      const localMidIndex = (localStartIndex + localEndIndex) / 2;
+      const rootNode = new Node(targetArray[localMidIndex]);
 
-    // recursive case
-    // left subarray
-    // right subarray
+      // base case: reach end of given array
+      if (localEndIndex < localStartIndex) return null;
 
-    // return rootNode;
-    return
+      // recursive case
+      // left subarray
+      rootNode.left = buildTreeRecurse(targetArray, localStartIndex, localMidIndex - 1);
+      // right subarray
+      rootNode.left = buildTreeRecurse(targetArray, localMidIndex + 1, localEndIndex);
+
+      return rootNode;
+    }
+    buildTreeRecurse(this.preprocess(array));
   }
 
   /**
