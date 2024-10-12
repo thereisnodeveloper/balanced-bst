@@ -4,6 +4,9 @@ const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
 class Tree {
+  constructor(array){
+    this.root = this.buildTree(array)
+  }
   insert(value){
     //start from rootNode
     //compare value with value of rootNode
@@ -76,9 +79,7 @@ class Tree {
   };
 }
 
-const tree1 = new Tree();
+const tree1 = new Tree(sampleArray2);
 
-const result = tree1.buildTree(sampleArray2);
-console.log('result:', result);
-tree1.prettyPrint(result)
+tree1.prettyPrint(tree1.root)
 
