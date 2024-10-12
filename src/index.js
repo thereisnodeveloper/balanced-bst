@@ -18,7 +18,7 @@ class Tree {
     function buildTreeRecurse(targetArray, startIndex, endIndex) {
       const localStartIndex = typeof startIndex === 'undefined' ? 0 : startIndex;
       const localEndIndex = typeof endIndex === 'undefined' ? targetArray.length - 1 : endIndex;
-      const localMidIndex = (localStartIndex + localEndIndex) / 2;
+      const localMidIndex = Math.floor((localStartIndex + localEndIndex) / 2)
       const rootNode = new Node(targetArray[localMidIndex]);
       // base case: reach end of given array
       if (localEndIndex < localStartIndex) return null;
@@ -60,7 +60,7 @@ class Tree {
 
 const tree1 = new Tree();
 
-const result = tree1.buildTree(sampleArray1);
+const result = tree1.buildTree(sampleArray2);
 console.log('result:', result);
 tree1.prettyPrint(result)
 
