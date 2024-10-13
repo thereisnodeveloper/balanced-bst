@@ -1,4 +1,5 @@
 import Node from './node.js';
+
 const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
@@ -7,7 +8,8 @@ class Tree {
     this.root = this.buildTree(array);
   }
 
-  insert(value) {
+  traverse(config) {
+    const { value, callback, conditionCheck } = config;
     if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
 
     // ignore duplicates
@@ -27,28 +29,42 @@ class Tree {
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
-      if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
+      if (conditionCheck()) {
         console.log('next node is undefined / null');
         // base case
-
-        nodeToGoTo = new Node(value);
+        nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
       } else {
         this.localRoot = nodeToGoTo;
-        this.insert(value);
+        this.traverse(config);
+        // this.insert(value);
       }
     } else {
       nodeToGoTo = this.localRoot.right;
-      if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
+      if (conditionCheck()) {
         console.log('next node is undefined / null');
 
-        nodeToGoTo = new Node(value);
+        // base case
+        nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
       } else {
         this.localRoot = nodeToGoTo;
-        this.insert(value);
+        this.traverse(config);
+
+        // this.insert(value);
       }
     }
+  }
+
+  insert(value) {
+    function insertCallBack(nodeToGoTo) {
+      nodeToGoTo = new Node(value);
+      return nodeToGoTo
+    }
+    function conditionCheck(nodeToGoTo) {
+      return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
+    }
+    this.traverse({ value, callback: insertCallBack, conditionCheck });
   }
 
   delete(value) {}
@@ -124,4 +140,5 @@ class Tree {
 
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
+tree1.insert(0)
 tree1.prettyPrint(tree1.root);
