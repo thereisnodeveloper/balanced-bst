@@ -1,25 +1,28 @@
 import Node from './node.js';
 
 const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
-const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 500];
+const ChildrenType = {
+  NO_CHILDREN: 'no children',
+  ONLY_LEFT_CHILD: 'only left child',
+  ONLY_RIGHT_CHILD: 'only right child',
+  BOTH_CHILDREN: 'both children',
+};
 
 class Tree {
   constructor(array) {
     this.root = this.buildTree(array);
-    this.localRoot = this.root
+    this.localRoot = this.root;
   }
 
   traverse(config) {
-    
     const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
-
     // ignore duplicates
     if (!ignoreDuplicates && value === this.localRoot.data) {
       throw new Error('duplicate value');
     }
 
-    
     const shouldGoLeft = () => {
       // if larger, go to right child
       if (value > this.localRoot.data) {
@@ -37,9 +40,10 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
-        this.localRoot = this.root
+        //reset localRoot for next method call before exiting
+        this.localRoot = this.root;
       } else {
-        //recursive case
+        // recursive case
         this.localRoot = nodeToGoTo;
         this.traverse(config);
       }
@@ -51,10 +55,10 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
-        this.localRoot = this.root
-
+        //reset localRoot for next method call before exiting
+        this.localRoot = this.root;
       } else {
-        //recursive case
+        // recursive case
         this.localRoot = nodeToGoTo;
         this.traverse(config);
       }
@@ -73,12 +77,31 @@ class Tree {
   }
 
   delete(value) {
-    function deleteCallback(nodeToGoTo) {
-      //if node has no children
-      checkIfLeafNode()
-      nodeToGoTo = null;
+    const deleteCallback = (nodeToGoTo) => {
+      // ??? should i use enums or return object with booleans?
+
+      // if node has no children, node set to null
+      console.log('nodeToGoTo:', nodeToGoTo)
+      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.NO_CHILDREN) {
+        nodeToGoTo = null;
+        return nodeToGoTo
+      }
+      // if node has 1 child, it is now set to that child
+      // TEST
+      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_LEFT_CHILD) {
+        nodeToGoTo = nodeToGoTo.left;
+        return nodeToGoTo
+      }
+      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_RIGHT_CHILD) {
+        nodeToGoTo = nodeToGoTo.right;
+        return nodeToGoTo
+      }
+
+      //if node has 2 children..
+
       return nodeToGoTo;
-    }
+    };
+
     function conditionCheck(nodeToGoTo) {
       return nodeToGoTo.data === value;
     }
@@ -86,7 +109,7 @@ class Tree {
       value,
       callback: deleteCallback,
       conditionCheck,
-       ignoreDuplicates: true,
+      ignoreDuplicates: true,
     });
   }
 
@@ -108,10 +131,18 @@ class Tree {
 
   rebalance() {}
 
-  checkIfLeafNode(node){
-    return typeof node.left === 'undefined' || node.left === null || typeof node.right === 'undefined' || node.right === null
+  checkNodeChildren(node) {
+    if (!node.left && !node.right) {
+      return ChildrenType.NO_CHILDREN;
+    }
+    if (node.left && !node.right) {
+      return ChildrenType.ONLY_LEFT_CHILD;
+    }
+    if (!node.left && node.right) {
+      return ChildrenType.ONLY_RIGHT_CHILD;
+    }
+    return ChildrenType.BOTH_CHILDREN;
   }
-
 
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
@@ -167,5 +198,5 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-// tree1.delete(1);
+tree1.delete(5);
 tree1.prettyPrint(tree1.root);

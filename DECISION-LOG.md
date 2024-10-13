@@ -4,7 +4,39 @@
 - **Why you made the decision** you did
 - **Outcome**
 
-  <>
+  - ~~Context (IGNORE. NOT NEEDED)~~
+
+    - ~~In case of only parent node having just 1 child, Tree.delete() needs a way to track if childnode was on the right OR left side of the parent. This is so that once the child node is set to null, we can then set parent.left or parent.right to null. Otherwise, `prettyPrint` throws TypeError due to an undefined node~~
+  - ~~Options~~
+
+    - ~~(1) Pass shouldGoLeft variable (true/false) as argument to the function `callback`() inside `traverse()` .THEN, ` Tree.deleteCallback(nodeToGoTo, shouldGoLeft)`sets `this.localRoot.right/left` to null.~~
+
+      - ~~Pros:~~
+        - ~~Whether or not child was on the left or right side of the parent might be useful information for other methods.~~
+      - ~~Cons:~~
+        - ~~1 extra argument that might not always be needed.~~
+        - ~~Some extra memory used, although `callback() `is only used when reaching base case, so it's not like every recursive call will use~~
+    - ~~(2) Set  Check if `localRoot.left` or `localRoot.right` is undefined. If it is, set it to null instead~~
+
+      - ~~Pros:~~
+        - ~~Simple~~
+      - ~~Cons:~~
+    - ~~(3)~~
+  - Context
+
+    - Tree.delete() needs a way to check if the node has 1 child, 2 children, or no children.
+  - Options
+
+    - return object with hasLeftChild & hasRightChild properties
+    - use enums
+      - pros:
+        - get to learn a new concept
+        - easy to read
+      - cons:
+        - not flexible because of literal
+  - Decision: try enums first, then object
+
+  `<-------------------------------------------------------------------------------->`
 - Context
 
   - `buildTree(array)`: passed-in array is just a array of values, and I need a way to construct subtrees, and link them all together.
