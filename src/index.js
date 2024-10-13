@@ -1,5 +1,4 @@
 import Node from './node.js';
-
 const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
 const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 
@@ -33,17 +32,16 @@ class Tree {
       this.insert(value);
     };
 
-    // base case
-    // FIXME: since I need to link the newly created node as a left/child of the
-    // parent node, I need to run checks BEFORE traversing to the next node
-
     // if rootNode=== null/undefined (means empty), insert
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
       if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
+        console.log('next node is undefined / null');
+        // base case
+
+        nodeToGoTo = new Node(value);
         this.localRoot.left = nodeToGoTo;
-        nodeToGoTo === new Node(value);
       } else {
         this.localRoot = nodeToGoTo;
         this.insert(value);
@@ -51,8 +49,10 @@ class Tree {
     } else {
       nodeToGoTo = this.localRoot.right;
       if (typeof nodeToGoTo === 'undefined' || nodeToGoTo === null) {
-        this.localRoot.left = nodeToGoTo;
-        nodeToGoTo === new Node(value);
+        console.log('next node is undefined / null');
+
+        nodeToGoTo = new Node(value);
+        this.localRoot.right = nodeToGoTo;
       } else {
         this.localRoot = nodeToGoTo;
         this.insert(value);
@@ -132,5 +132,6 @@ class Tree {
 }
 
 const tree1 = new Tree(sampleArray2);
+tree1.prettyPrint(tree1.root);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
