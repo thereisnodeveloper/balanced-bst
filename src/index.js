@@ -37,7 +37,6 @@ class Tree {
       } else {
         this.localRoot = nodeToGoTo;
         this.traverse(config);
-        // this.insert(value);
       }
     } else {
       nodeToGoTo = this.localRoot.right;
@@ -51,7 +50,6 @@ class Tree {
         this.localRoot = nodeToGoTo;
         this.traverse(config);
 
-        // this.insert(value);
       }
     }
   }
