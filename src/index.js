@@ -38,7 +38,9 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
+        this.localRoot = this.root
       } else {
+        //recursive case
         this.localRoot = nodeToGoTo;
         this.traverse(config);
       }
@@ -50,7 +52,10 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
+        this.localRoot = this.root
+
       } else {
+        //recursive case
         this.localRoot = nodeToGoTo;
         this.traverse(config);
       }
@@ -156,5 +161,5 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-tree1.delete(1);
+// tree1.delete(1);
 tree1.prettyPrint(tree1.root);
