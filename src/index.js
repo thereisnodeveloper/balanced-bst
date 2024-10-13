@@ -6,17 +6,21 @@ const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 class Tree {
   constructor(array) {
     this.root = this.buildTree(array);
+    this.localRoot = this.root
   }
 
   traverse(config) {
-    const { value, callback, conditionCheck } = config;
-    if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
+    
+    const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
+    // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
 
     // ignore duplicates
-    if (value === this.localRoot.data) {
+    if (!ignoreDuplicates && value === this.localRoot.data) {
       throw new Error('duplicate value');
     }
 
+
+    
     const shouldGoLeft = () => {
       // if larger, go to right child
       if (value > this.localRoot.data) {
@@ -49,31 +53,35 @@ class Tree {
       } else {
         this.localRoot = nodeToGoTo;
         this.traverse(config);
-
       }
     }
   }
 
   insert(value) {
-    function insertCallBack(nodeToGoTo) {
+    function insertCallback(nodeToGoTo) {
       nodeToGoTo = new Node(value);
-      return nodeToGoTo
+      return nodeToGoTo;
     }
     function conditionCheck(nodeToGoTo) {
       return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
     }
-    this.traverse({ value, callback: insertCallBack, conditionCheck });
+    this.traverse({ value, callback: insertCallback, conditionCheck });
   }
 
   delete(value) {
     function deleteCallback(nodeToGoTo) {
-      nodeToGoTo = new Node(value);
-      return nodeToGoTo
+      nodeToGoTo = null;
+      return nodeToGoTo;
     }
     function conditionCheck(nodeToGoTo) {
-      return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
+      return nodeToGoTo.data === value;
     }
-    this.traverse({ value, callback: deleteCallback, conditionCheck });
+    this.traverse({
+      value,
+      callback: deleteCallback,
+      conditionCheck,
+       ignoreDuplicates: true,
+    });
   }
 
   find(value) {}
@@ -147,5 +155,6 @@ class Tree {
 
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
-tree1.insert(0)
+tree1.insert(0);
+tree1.delete(1);
 tree1.prettyPrint(tree1.root);
