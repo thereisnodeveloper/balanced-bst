@@ -16,9 +16,7 @@ class Tree {
   }
 
   traverse(config) {
-    const {
-      value, callback, conditionCheck, ignoreDuplicates = false,
-    } = config;
+    const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
     // ignore duplicates
     if (!ignoreDuplicates && value === this.localRoot.data) {
@@ -104,20 +102,13 @@ class Tree {
       // replace node with that number, and remove any links.
       // NOTE: only need to replace the value of the node, since you don't need references from the "next largest number"
       if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.BOTH_CHILDREN) {
-        console.log('has two children');
         const traverseLeft = (targetNode) => {
-          console.log('targetNode:', targetNode);
 
           let previousNode;
           while (
-            // this.checkNodeChildren(targetNode) !== ChildrenType.NO_CHILDREN ||
-            // this.checkNodeChildren(targetNode) !==
-            // ChildrenType.ONLY_RIGHT_CHILD
-            typeof targetNode.left !== 'undefined'
-            && targetNode.left !== null
-
+            typeof targetNode.left !== 'undefined' &&
+            targetNode.left !== null
           ) {
-            console.log('targetNode:', targetNode);
             previousNode = targetNode;
 
             targetNode = targetNode.left;
@@ -126,7 +117,6 @@ class Tree {
         };
         // find smallest in the right subtree
         const traverseResult = traverseLeft(nodeToGoTo.right);
-        console.log('traverseResult:', traverseResult);
         const nextLargest = traverseResult.targetNode;
         nodeToGoTo.data = nextLargest.data;
         traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to null
@@ -231,5 +221,5 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-tree1.delete(67);
+tree1.delete(500);
 tree1.prettyPrint(tree1.root);
