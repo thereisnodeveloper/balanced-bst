@@ -65,7 +65,16 @@ class Tree {
     this.traverse({ value, callback: insertCallBack, conditionCheck });
   }
 
-  delete(value) {}
+  delete(value) {
+    function deleteCallback(nodeToGoTo) {
+      nodeToGoTo = new Node(value);
+      return nodeToGoTo
+    }
+    function conditionCheck(nodeToGoTo) {
+      return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
+    }
+    this.traverse({ value, callback: deleteCallback, conditionCheck });
+  }
 
   find(value) {}
 
