@@ -8,31 +8,22 @@ class Tree {
   }
 
   insert(value) {
-    // start from rootNode
     if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
 
-    // compare value with value of rootNode
     // ignore duplicates
     if (value === this.localRoot.data) {
       throw new Error('duplicate value');
-      // TEST
     }
 
     const shouldGoLeft = () => {
       // if larger, go to right child
       if (value > this.localRoot.data) {
         return false;
-        this.localRoot = this.localRoot.right;
-        this.insert(value);
       }
       // if smaller, go to left child
-
       return true;
-      this.localRoot = this.localRoot.left;
-      this.insert(value);
     };
 
-    // if rootNode=== null/undefined (means empty), insert
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
@@ -133,5 +124,4 @@ class Tree {
 
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
-tree1.insert(0);
 tree1.prettyPrint(tree1.root);
