@@ -19,7 +19,6 @@ class Tree {
       throw new Error('duplicate value');
     }
 
-
     
     const shouldGoLeft = () => {
       // if larger, go to right child
@@ -75,6 +74,8 @@ class Tree {
 
   delete(value) {
     function deleteCallback(nodeToGoTo) {
+      //if node has no children
+      checkIfLeafNode()
       nodeToGoTo = null;
       return nodeToGoTo;
     }
@@ -106,6 +107,11 @@ class Tree {
   isBalanced() {}
 
   rebalance() {}
+
+  checkIfLeafNode(node){
+    return typeof node.left === 'undefined' || node.left === null || typeof node.right === 'undefined' || node.right === null
+  }
+
 
   /**
      * @description turn array into balanced binary tree full of Node objects appropriately placed.
