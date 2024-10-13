@@ -29,7 +29,7 @@ class Tree {
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
-      if (conditionCheck()) {
+      if (conditionCheck(nodeToGoTo)) {
         console.log('next node is undefined / null');
         // base case
         nodeToGoTo = callback(nodeToGoTo);
@@ -40,7 +40,7 @@ class Tree {
       }
     } else {
       nodeToGoTo = this.localRoot.right;
-      if (conditionCheck()) {
+      if (conditionCheck(nodeToGoTo)) {
         console.log('next node is undefined / null');
 
         // base case
