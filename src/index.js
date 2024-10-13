@@ -16,7 +16,9 @@ class Tree {
   }
 
   traverse(config) {
-    const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
+    const {
+      value, callback, conditionCheck, ignoreDuplicates = false,
+    } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
     // ignore duplicates
     if (!ignoreDuplicates && value === this.localRoot.data) {
@@ -40,7 +42,7 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
-        //reset localRoot for next method call before exiting
+        // reset localRoot for next method call before exiting
         this.localRoot = this.root;
       } else {
         // recursive case
@@ -55,7 +57,7 @@ class Tree {
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
-        //reset localRoot for next method call before exiting
+        // reset localRoot for next method call before exiting
         this.localRoot = this.root;
       } else {
         // recursive case
@@ -81,23 +83,54 @@ class Tree {
       // ??? should i use enums or return object with booleans?
 
       // if node has no children, node set to null
-      console.log('nodeToGoTo:', nodeToGoTo)
+      console.log('nodeToGoTo:', nodeToGoTo);
       if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.NO_CHILDREN) {
         nodeToGoTo = null;
-        return nodeToGoTo
+        return nodeToGoTo;
       }
       // if node has 1 child, it is now set to that child
       // TEST
       if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_LEFT_CHILD) {
         nodeToGoTo = nodeToGoTo.left;
-        return nodeToGoTo
+        return nodeToGoTo;
       }
       if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_RIGHT_CHILD) {
         nodeToGoTo = nodeToGoTo.right;
-        return nodeToGoTo
+        return nodeToGoTo;
       }
 
-      //if node has 2 children..
+      // if node has 2 children, find the NEXT largest number in the tree
+      // (leftmost node of the node's right subtree),
+      // replace node with that number, and remove any links.
+      // NOTE: only need to replace the value of the node, since you don't need references from the "next largest number"
+      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.BOTH_CHILDREN) {
+        console.log('has two children');
+        const traverseLeft = (targetNode) => {
+          console.log('targetNode:', targetNode);
+
+          let previousNode;
+          while (
+            // this.checkNodeChildren(targetNode) !== ChildrenType.NO_CHILDREN ||
+            // this.checkNodeChildren(targetNode) !==
+            // ChildrenType.ONLY_RIGHT_CHILD
+            typeof targetNode.left !== 'undefined'
+            && targetNode.left !== null
+
+          ) {
+            console.log('targetNode:', targetNode);
+            previousNode = targetNode;
+
+            targetNode = targetNode.left;
+          }
+          return { targetNode, previousNode };
+        };
+        // find smallest in the right subtree
+        const traverseResult = traverseLeft(nodeToGoTo.right);
+        console.log('traverseResult:', traverseResult);
+        const nextLargest = traverseResult.targetNode;
+        nodeToGoTo.data = nextLargest.data;
+        traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to null
+      }
 
       return nodeToGoTo;
     };
@@ -198,5 +231,5 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-tree1.delete(5);
+tree1.delete(67);
 tree1.prettyPrint(tree1.root);
