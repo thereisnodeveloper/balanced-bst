@@ -1,12 +1,20 @@
 import Node from './node.js';
 
 const sampleArray1 = [1, 2, 3, 4, 5, 6, 7];
-const sampleArray2 = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 500];
+const sampleArray2 = [
+  1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 500, 350, 400, 450, 7000, 5000, 5500, 4500, 5100,
+];
 const ChildrenType = {
   NO_CHILDREN: 'no children',
   ONLY_LEFT_CHILD: 'only left child',
   ONLY_RIGHT_CHILD: 'only right child',
   BOTH_CHILDREN: 'both children',
+};
+
+const TraverseCondition = {
+  LEFT: 'left',
+  RIGHT: 'right',
+  NUMERIC: 'numeric',
 };
 
 class Tree {
@@ -17,51 +25,61 @@ class Tree {
 
   traverse(config) {
     const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
-    // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;
+    // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
+    // FIXME: this doesn't do what I think it should do
     if (!ignoreDuplicates && value === this.localRoot.data) {
       throw new Error('duplicate value');
     }
 
-    const shouldGoLeft = () => {
-      // if larger, go to right child
-      if (value > this.localRoot.data) {
+    const shouldGoLeft = (staticCondition = null, criterion = TraverseCondition.NUMERIC) => {
+      if (staticCondition) {
+        if (staticCondition === TraverseCondition.LEFT) {
+          return true;
+        }
         return false;
       }
-      // if smaller, go to left child
-      return true;
+
+      // if larger, go to right child
+      if (criterion === TraverseCondition.NUMERIC) {
+        if (value > this.localRoot.data) {
+          return false;
+        }
+        // if smaller, go to left child
+        return true;
+      }
     };
 
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
       if (conditionCheck(nodeToGoTo)) {
-        console.log('next node is undefined / null');
+        // console.log('next node is undefined / null');
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
         // reset localRoot for next method call before exiting
         this.localRoot = this.root;
-      } else {
-        // recursive case
-        this.localRoot = nodeToGoTo;
-        this.traverse(config);
+        return this.root;
       }
+      // recursive case
+      this.localRoot = nodeToGoTo;
+      this.traverse(config);
     } else {
       nodeToGoTo = this.localRoot.right;
       if (conditionCheck(nodeToGoTo)) {
-        console.log('next node is undefined / null');
+        // console.log('next node is undefined / null');
 
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
         this.localRoot = this.root;
-      } else {
-        // recursive case
-        this.localRoot = nodeToGoTo;
-        this.traverse(config);
+        return this.root;
       }
+      // recursive case
+      this.localRoot = nodeToGoTo;
+      this.traverse(config);
     }
   }
 
@@ -85,11 +103,10 @@ class Tree {
         targetNode = targetNode.left;
       }
       console.log('previousNode:', previousNode);
-      return { targetNode, previousNode };
+      return { targetNode, parent: previousNode };
     };
 
     const deleteCallback = (nodeToGoTo) => {
-      // ??? should i use enums or return object with booleans?
 
       // if node has no children, node set to null
       console.log('nodeToGoTo:', nodeToGoTo);
@@ -106,57 +123,45 @@ class Tree {
         case ChildrenType.BOTH_CHILDREN:
           // find smallest in the right subtree
           const rightSubtreeStart = nodeToGoTo.right;
-          const traverseResult = traverseLeft(rightSubtreeStart);
+          var traverseResult = traverseLeft(rightSubtreeStart);
           let nextLargest = traverseResult.targetNode;
-          // FIXME:
-          nodeToGoTo.data = nextLargest.data;
+          // FIXME
+          // check
+
+          switch (this.checkNodeChildren(nextLargest)) {
+            case ChildrenType.NO_CHILDREN:
+              // TESTED
+              nodeToGoTo.data = nextLargest.data;
+              break;
+
+            case ChildrenType.ONLY_LEFT_CHILD:
+            case ChildrenType.BOTH_CHILDREN:
+              throw new Error(
+                'should not have happened, inorder successofr should have no   number that is smaller than it '
+              );
+            //! !!
+            case ChildrenType.ONLY_RIGHT_CHILD:
+
+              console.log('nodeToGoTo.right:', nodeToGoTo.right)
+              console.log('nextLargest.right:', nextLargest.right)
+              nodeToGoTo.right.left = nextLargest.right
+              
+
+              nodeToGoTo.data = nextLargest.data;
+             //FIXME
+
+            default:
+              break;
+          }
+          // nodeToGoTo = nextLargest;
+
           nextLargest = null;
-          traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to nu
+          traverseResult.parent.left = null; // parent of nextLargest: set its .left to nu
           break;
         default:
           throw new Error('check this error');
           break;
       }
-
-      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.NO_CHILDREN) {
-      //   nodeToGoTo = null;
-      //   return nodeToGoTo;
-      // }
-      // // if node has 1 child, it is now set to that child
-      // // TEST
-      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_LEFT_CHILD) {
-      //   nodeToGoTo = nodeToGoTo.left;
-      //   return nodeToGoTo;
-      // }
-      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_RIGHT_CHILD) {
-      //   nodeToGoTo = nodeToGoTo.right;
-      //   return nodeToGoTo;
-      // }
-
-      // if node has 2 children, find the NEXT largest number in the tree
-      // (leftmost node of the node's right subtree),
-      // replace node with that number, and remove any links.
-      // NOTE: only need to replace the value of the node, since you don't need references from the "next largest number"
-      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.BOTH_CHILDREN) {
-      //   const traverseLeft = (targetNode) => {
-      //     let previousNode = targetNode;
-      //     while (typeof targetNode.left !== 'undefined' && targetNode.left !== null) {
-      //       previousNode = targetNode;
-
-      //       targetNode = targetNode.left;
-      //     }
-      //     console.log('previousNode:', previousNode);
-      //     return { targetNode, previousNode };
-      //   };
-      //   // find smallest in the right subtree
-      //   const rightSubtreeStart = nodeToGoTo.right;
-      //   const traverseResult = traverseLeft(rightSubtreeStart);
-      //   let nextLargest = traverseResult.targetNode;
-      //   // FIXME:
-      //   nodeToGoTo.data = nextLargest.data;
-      //   nextLargest = null;
-      //   traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to null
-      // }
 
       return nodeToGoTo;
     };
@@ -257,5 +262,5 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-tree1.delete(500);
+tree1.delete(4500);
 tree1.prettyPrint(tree1.root);
