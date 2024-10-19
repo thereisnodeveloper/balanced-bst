@@ -77,50 +77,86 @@ class Tree {
   }
 
   delete(value) {
+    const traverseLeft = (targetNode) => {
+      let previousNode = targetNode;
+      while (typeof targetNode.left !== 'undefined' && targetNode.left !== null) {
+        previousNode = targetNode;
+
+        targetNode = targetNode.left;
+      }
+      console.log('previousNode:', previousNode);
+      return { targetNode, previousNode };
+    };
+
     const deleteCallback = (nodeToGoTo) => {
       // ??? should i use enums or return object with booleans?
 
       // if node has no children, node set to null
       console.log('nodeToGoTo:', nodeToGoTo);
-      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.NO_CHILDREN) {
-        nodeToGoTo = null;
-        return nodeToGoTo;
+      switch (this.checkNodeChildren(nodeToGoTo)) {
+        case ChildrenType.NO_CHILDREN:
+          nodeToGoTo = null;
+          break;
+        case ChildrenType.ONLY_LEFT_CHILD:
+          nodeToGoTo = nodeToGoTo.left;
+          break;
+        case ChildrenType.ONLY_RIGHT_CHILD:
+          nodeToGoTo = nodeToGoTo.right;
+          break;
+        case ChildrenType.BOTH_CHILDREN:
+          // find smallest in the right subtree
+          const rightSubtreeStart = nodeToGoTo.right;
+          const traverseResult = traverseLeft(rightSubtreeStart);
+          let nextLargest = traverseResult.targetNode;
+          // FIXME:
+          nodeToGoTo.data = nextLargest.data;
+          nextLargest = null;
+          traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to nu
+          break;
+        default:
+          throw new Error('check this error');
+          break;
       }
-      // if node has 1 child, it is now set to that child
-      // TEST
-      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_LEFT_CHILD) {
-        nodeToGoTo = nodeToGoTo.left;
-        return nodeToGoTo;
-      }
-      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_RIGHT_CHILD) {
-        nodeToGoTo = nodeToGoTo.right;
-        return nodeToGoTo;
-      }
+
+      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.NO_CHILDREN) {
+      //   nodeToGoTo = null;
+      //   return nodeToGoTo;
+      // }
+      // // if node has 1 child, it is now set to that child
+      // // TEST
+      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_LEFT_CHILD) {
+      //   nodeToGoTo = nodeToGoTo.left;
+      //   return nodeToGoTo;
+      // }
+      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.ONLY_RIGHT_CHILD) {
+      //   nodeToGoTo = nodeToGoTo.right;
+      //   return nodeToGoTo;
+      // }
 
       // if node has 2 children, find the NEXT largest number in the tree
       // (leftmost node of the node's right subtree),
       // replace node with that number, and remove any links.
       // NOTE: only need to replace the value of the node, since you don't need references from the "next largest number"
-      if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.BOTH_CHILDREN) {
-        const traverseLeft = (targetNode) => {
+      // if (this.checkNodeChildren(nodeToGoTo) === ChildrenType.BOTH_CHILDREN) {
+      //   const traverseLeft = (targetNode) => {
+      //     let previousNode = targetNode;
+      //     while (typeof targetNode.left !== 'undefined' && targetNode.left !== null) {
+      //       previousNode = targetNode;
 
-          let previousNode;
-          while (
-            typeof targetNode.left !== 'undefined' &&
-            targetNode.left !== null
-          ) {
-            previousNode = targetNode;
-
-            targetNode = targetNode.left;
-          }
-          return { targetNode, previousNode };
-        };
-        // find smallest in the right subtree
-        const traverseResult = traverseLeft(nodeToGoTo.right);
-        const nextLargest = traverseResult.targetNode;
-        nodeToGoTo.data = nextLargest.data;
-        traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to null
-      }
+      //       targetNode = targetNode.left;
+      //     }
+      //     console.log('previousNode:', previousNode);
+      //     return { targetNode, previousNode };
+      //   };
+      //   // find smallest in the right subtree
+      //   const rightSubtreeStart = nodeToGoTo.right;
+      //   const traverseResult = traverseLeft(rightSubtreeStart);
+      //   let nextLargest = traverseResult.targetNode;
+      //   // FIXME:
+      //   nodeToGoTo.data = nextLargest.data;
+      //   nextLargest = null;
+      //   traverseResult.previousNode.left = null; // parent of nextLargest: set its .left to null
+      // }
 
       return nodeToGoTo;
     };
