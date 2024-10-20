@@ -12,4 +12,5 @@ assignees: ''
 Expected:
 Actual:
 To Reproduce:
+Hypotheses
 Symptoms/Obervations
