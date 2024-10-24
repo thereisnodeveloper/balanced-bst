@@ -24,7 +24,9 @@ class Tree {
   }
 
   traverse(config) {
-    const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
+    const {
+      value, callback, stopConditionMet, ignoreDuplicates = false,
+    } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
@@ -51,12 +53,12 @@ class Tree {
     };
 
     let nodeToGoTo;
-    //determine if we need to go left or right
+    // determine if we need to go left or right
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-        //callback is used to perform operations on the target node
+        // callback is used to perform operations on the target node
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -66,13 +68,13 @@ class Tree {
       // recursive case
       this.localRoot = nodeToGoTo;
       this.traverse(config);
-      //if we go right...
+      // if we go right...
     } else {
       nodeToGoTo = this.localRoot.right;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-        //??? why don't i like this version of traverse()? 
-        //it's not a full traversal, just travels downwards from the top node
+        // ??? why don't i like this version of traverse()?
+        // it's not a full traversal, just travels downwards from the top node
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -93,7 +95,7 @@ class Tree {
     function conditionCheck(nodeToGoTo) {
       return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
     }
-    this.traverse({ value, callback: insertCallback, conditionCheck });
+    this.traverse({ value, callback: insertCallback, stopConditionMet: conditionCheck });
   }
 
   delete(value) {
@@ -109,7 +111,6 @@ class Tree {
     };
 
     const deleteCallback = (nodeToGoTo) => {
-
       // if node has no children, node set to null
       console.log('nodeToGoTo:', nodeToGoTo);
       switch (this.checkNodeChildren(nodeToGoTo)) {
@@ -139,18 +140,16 @@ class Tree {
             case ChildrenType.ONLY_LEFT_CHILD:
             case ChildrenType.BOTH_CHILDREN:
               throw new Error(
-                'should not have happened, inorder successofr should have no   number that is smaller than it '
+                'should not have happened, inorder successofr should have no   number that is smaller than it ',
               );
             //! !!
             case ChildrenType.ONLY_RIGHT_CHILD:
-
-              console.log('nodeToGoTo.right:', nodeToGoTo.right)
-              console.log('nextLargest.right:', nextLargest.right)
-              nodeToGoTo.right.left = nextLargest.right
-              
+              console.log('nodeToGoTo.right:', nodeToGoTo.right);
+              console.log('nextLargest.right:', nextLargest.right);
+              nodeToGoTo.right.left = nextLargest.right;
 
               nodeToGoTo.data = nextLargest.data;
-             //FIXME
+              // FIXME
 
             default:
               break;
@@ -174,14 +173,43 @@ class Tree {
     this.traverse({
       value,
       callback: deleteCallback,
-      conditionCheck,
+      stopConditionMet: conditionCheck,
       ignoreDuplicates: true,
     });
   }
 
   find(value) {}
 
-  levelOrder(callback) {}
+  levelOrderIterative(callback = (node) => console.log('node', node)) {
+    let keepTraversing = true;
+    const queueArray = [];
+    const visitHistoryArray = [];
+    // start from root node of tree
+    this.localRoot = this.root;
+    // while haven't reached end yet...
+    function pushValidChildren(parentNode) {
+      [parentNode.left, parentNode.right].forEach((child) => {
+        if (child !== null && child !== undefined) {
+          this.push(child);
+        }
+      });
+    }
+    pushValidChildren.call(queueArray, this.localRoot);
+    while (keepTraversing) {
+      // get all direct descendants
+      // push to QUEUE array
+      // visit: process QUEUE array (Pop whenever 1 item is processed)
+
+      const shiftedItem = queueArray.shift()
+      callback(shiftedItem)
+      pushValidChildren.call(visitHistoryArray, shiftedItem)
+      pushValidChildren.call(queueArray, shiftedItem)
+
+      keepTraversing = queueArray.length > 0
+
+      // END means QUEUE array is empty
+    }
+  }
 
   inOrder(callback) {}
 
@@ -262,7 +290,8 @@ class Tree {
 }
 
 const tree1 = new Tree(sampleArray2);
-tree1.prettyPrint(tree1.root);
 tree1.insert(0);
-tree1.delete(4500);
 tree1.prettyPrint(tree1.root);
+// tree1.delete(4500);
+// tree1.prettyPrint(tree1.root);
+tree1.levelOrderIterative();
