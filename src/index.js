@@ -24,10 +24,10 @@ class Tree {
   }
 
   traverse(config) {
-    const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
+    const { value, callback, conditionCheck: stopConditionMet, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
-    // FIXME: this doesn't do what I think it should do
+    // FIXME: this ignoreDuplicates doesn't do what I think it should do
     if (!ignoreDuplicates && value === this.localRoot.data) {
       throw new Error('duplicate value');
     }
@@ -53,7 +53,7 @@ class Tree {
     let nodeToGoTo;
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
-      if (conditionCheck(nodeToGoTo)) {
+      if (stopConditionMet(nodeToGoTo)) {
         // console.log('next node is undefined / null');
         // base case
         nodeToGoTo = callback(nodeToGoTo);
@@ -67,7 +67,7 @@ class Tree {
       this.traverse(config);
     } else {
       nodeToGoTo = this.localRoot.right;
-      if (conditionCheck(nodeToGoTo)) {
+      if (stopConditionMet(nodeToGoTo)) {
         // console.log('next node is undefined / null');
 
         // base case
