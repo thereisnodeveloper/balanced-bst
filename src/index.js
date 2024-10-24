@@ -24,7 +24,9 @@ class Tree {
   }
 
   traverse(config) {
-    const { value, callback, conditionCheck, ignoreDuplicates = false } = config;
+    const {
+      value, callback, conditionCheck, ignoreDuplicates = false,
+    } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
     // FIXME: this doesn't do what I think it should do
@@ -66,10 +68,9 @@ class Tree {
       this.localRoot = nodeToGoTo;
       this.traverse(config);
     } else {
+      // go to the right instead
       nodeToGoTo = this.localRoot.right;
       if (conditionCheck(nodeToGoTo)) {
-        // console.log('next node is undefined / null');
-
         // base case
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
@@ -107,7 +108,6 @@ class Tree {
     };
 
     const deleteCallback = (nodeToGoTo) => {
-
       // if node has no children, node set to null
       console.log('nodeToGoTo:', nodeToGoTo);
       switch (this.checkNodeChildren(nodeToGoTo)) {
@@ -137,20 +137,25 @@ class Tree {
             case ChildrenType.ONLY_LEFT_CHILD:
             case ChildrenType.BOTH_CHILDREN:
               throw new Error(
-                'should not have happened, inorder successofr should have no   number that is smaller than it '
+                'should not have happened, inorder successofr should have no   number that is smaller than it ',
               );
             //! !!
             case ChildrenType.ONLY_RIGHT_CHILD:
+              console.log('before operation');
+              this.visualizeLocalStructure(nodeToGoTo, nextLargest);
 
-              console.log('nodeToGoTo.right:', nodeToGoTo.right)
-              console.log('nextLargest.right:', nextLargest.right)
-              nodeToGoTo.right.left = nextLargest.right
-              
+              console.log('nodeToGoTo.right:', nodeToGoTo.right);
+              console.log('nextLargest.right:', nextLargest.right);
+              nodeToGoTo.right.left = nextLargest.right;
+
+              console.log('After operation:');
+              this.visualizeLocalStructure(nodeToGoTo, nextLargest);
 
               nodeToGoTo.data = nextLargest.data;
-             //FIXME
-
+              // FIXME
+              break;
             default:
+              nodeToGoTo.data = null
               break;
           }
           // nodeToGoTo = nextLargest;
@@ -160,7 +165,6 @@ class Tree {
           break;
         default:
           throw new Error('check this error');
-          break;
       }
 
       return nodeToGoTo;
@@ -177,9 +181,31 @@ class Tree {
     });
   }
 
+  visualizeLocalStructure(node, nextLargest) {
+    console.log('Local structure:');
+    console.log(`${node.data}`);
+    console.log(`├── ${node.left ? node.left.data : 'null'}`);
+    console.log(`└── ${node.right ? node.right.data : 'null'}`);
+    console.log(`    └── ${node.right && node.right.left ? node.right.left.data : 'null'}`);
+    console.log(`Next largest: ${nextLargest.data}`);
+    console.log(`└── ${nextLargest.right ? nextLargest.right.data : 'null'}`);
+  }
+
   find(value) {}
 
-  levelOrder(callback) {}
+  levelOrderIteration(callback) {
+    const queueArray = [];
+    const currentNode = this.root;
+    // get all nodes in the row
+    while (current) queueArray.push(currentNode.left, currentNode.right);
+
+    queueArray.forEach((node) => {
+      queueArray.push(node.left);
+      queueArray.push(node.right);
+    });
+
+    // how do i know when I've reached the end?
+  }
 
   inOrder(callback) {}
 
