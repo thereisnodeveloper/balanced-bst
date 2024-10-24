@@ -24,7 +24,7 @@ class Tree {
   }
 
   traverse(config) {
-    const { value, callback, conditionCheck: stopConditionMet, ignoreDuplicates = false } = config;
+    const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
@@ -51,11 +51,12 @@ class Tree {
     };
 
     let nodeToGoTo;
+    //determine if we need to go left or right
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
       if (stopConditionMet(nodeToGoTo)) {
-        // console.log('next node is undefined / null');
         // base case
+        //callback is used to perform operations on the target node
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -65,12 +66,13 @@ class Tree {
       // recursive case
       this.localRoot = nodeToGoTo;
       this.traverse(config);
+      //if we go right...
     } else {
       nodeToGoTo = this.localRoot.right;
       if (stopConditionMet(nodeToGoTo)) {
-        // console.log('next node is undefined / null');
-
         // base case
+        //??? why don't i like this version of traverse()? 
+        //it's not a full traversal, just travels downwards from the top node
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
