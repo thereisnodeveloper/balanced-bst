@@ -177,7 +177,11 @@ class Tree {
   }
 
   find(value) {
-    this.itera
+    return this.levelOrderTraversalIterative((currentNode) => {
+      if (currentNode.data === value) {
+        return currentNode;
+      }
+    }, true);
   }
 
   /**
@@ -192,7 +196,7 @@ class Tree {
    *   - Traverses until there are no more nodes in the queue.
    *   - Applies the callback to each node in sequence.
    */
-  levelOrderTraversalIterative(callback) {
+  levelOrderTraversalIterative(callback, exitOnCallback = false) {
     if (!callback) throw new Error('needs callback');
     let keepTraversing = true;
     const queueArray = [];
@@ -200,14 +204,17 @@ class Tree {
     this.pushValidChildren.call(queueArray, this.localRoot);
     while (keepTraversing) {
       const shiftedItem = queueArray.shift();
-      callback(shiftedItem);
+      const callBackResult = callback(shiftedItem);
+    if (exitOnCallback && callBackResult){
+      return callBackResult
+    }
       this.pushValidChildren.call(queueArray, shiftedItem);
 
       keepTraversing = queueArray.length > 0;
     }
   }
 
-/**
+  /**
    * Initiates a recursive level-order traversal on a tree structure.
    * @example
    * levelOrderTraversalRecursiveWrapper(callbackFunction, initialQueueArray)
@@ -228,7 +235,7 @@ class Tree {
     }
     if (!callback) throw new Error('needs callback');
 
-/**
+    /**
      * Performs a level-order traversal on a tree structure.
      * @example
      * levelOrderTraversalRecursive(callbackFunction, initialQueueArray)
@@ -243,9 +250,11 @@ class Tree {
      */
     const levelOrderTraversalRecursive = (callback, queueArray) => {
       //BASE CASE
-      if (this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN
-      && queueArray.length === 0
-    ) return queueArray;
+      if (
+        this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN &&
+        queueArray.length === 0
+      )
+        return queueArray;
 
       //RECURSIVE CASE
       this.localRoot = queueArray.shift();
@@ -349,3 +358,5 @@ tree1.prettyPrint(tree1.root);
 // tree1.delete(4500);
 // tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
+const result = tree1.find(67);
+console.log('result:', result);
