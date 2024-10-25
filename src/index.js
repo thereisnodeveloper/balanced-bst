@@ -182,6 +182,18 @@ class Tree {
 
   }
 
+/**
+  * Performs an iterative level-order traversal of a tree.
+  * @example
+  * levelOrderTraversalIterative(node => console.log(node))
+  * undefined
+  * @param {Function} callback - Function applied to each node during traversal.
+  * @returns {void} No return value.
+  * @description
+  *   - Uses a queue to track nodes for traversal.
+  *   - Traverses until there are no more nodes in the queue.
+  *   - Applies the callback to each node in sequence.
+  */
   levelOrderTraversalIterative(callback = (node) => console.log('node', node)) {
     let keepTraversing = true;
     const queueArray = [];
