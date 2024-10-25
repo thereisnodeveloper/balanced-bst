@@ -6,7 +6,8 @@
 
 
 - **Context** or problem you were solving
-	+ queArray.shift
+	+ `queArray.shift` modifies the array in place inside of a `forEach` loop.
+	+ 
 - **Options considered**
 - **Pros and cons** of each option
 - **Why you made the decision** you did

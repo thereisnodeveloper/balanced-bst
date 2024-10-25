@@ -178,37 +178,31 @@ class Tree {
     });
   }
 
-  find(value) {}
+  find(value) {
 
-  levelOrderIterative(callback = (node) => console.log('node', node)) {
+  }
+
+  levelOrderTraversalIterative(callback = (node) => console.log('node', node)) {
     let keepTraversing = true;
     const queueArray = [];
-    const visitHistoryArray = [];
-    // start from root node of tree
     this.localRoot = this.root;
-    // while haven't reached end yet...
-    function pushValidChildren(parentNode) {
-      [parentNode.left, parentNode.right].forEach((child) => {
-        if (child !== null && child !== undefined) {
-          this.push(child);
-        }
-      });
-    }
     pushValidChildren.call(queueArray, this.localRoot);
     while (keepTraversing) {
-      // get all direct descendants
-      // push to QUEUE array
-      // visit: process QUEUE array (Pop whenever 1 item is processed)
 
       const shiftedItem = queueArray.shift()
       callback(shiftedItem)
-      pushValidChildren.call(visitHistoryArray, shiftedItem)
       pushValidChildren.call(queueArray, shiftedItem)
 
       keepTraversing = queueArray.length > 0
-
-      // END means QUEUE array is empty
     }
+  }
+
+  pushValidChildren(parentNode) {
+    [parentNode.left, parentNode.right].forEach((child) => {
+      if (child !== null && child !== undefined) {
+        this.push(child);
+      }
+    });
   }
 
   inOrder(callback) {}
@@ -294,4 +288,4 @@ tree1.insert(0);
 tree1.prettyPrint(tree1.root);
 // tree1.delete(4500);
 // tree1.prettyPrint(tree1.root);
-tree1.levelOrderIterative();
+tree1.levelOrderTraversalIterative();
