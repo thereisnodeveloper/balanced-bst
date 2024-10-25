@@ -24,9 +24,7 @@ class Tree {
   }
 
   traverse(config) {
-    const {
-      value, callback, stopConditionMet, ignoreDuplicates = false,
-    } = config;
+    const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
@@ -140,7 +138,7 @@ class Tree {
             case ChildrenType.ONLY_LEFT_CHILD:
             case ChildrenType.BOTH_CHILDREN:
               throw new Error(
-                'should not have happened, inorder successofr should have no   number that is smaller than it ',
+                'should not have happened, inorder successofr should have no   number that is smaller than it '
               );
             //! !!
             case ChildrenType.ONLY_RIGHT_CHILD:
@@ -149,7 +147,7 @@ class Tree {
               nodeToGoTo.right.left = nextLargest.right;
 
               nodeToGoTo.data = nextLargest.data;
-              // FIXME
+            // FIXME
 
             default:
               break;
@@ -178,35 +176,43 @@ class Tree {
     });
   }
 
-  find(value) {
+  find(value) {}
 
-  }
-
-/**
-  * Performs an iterative level-order traversal of a tree.
-  * @example
-  * levelOrderTraversalIterative(node => console.log(node))
-  * undefined
-  * @param {Function} callback - Function applied to each node during traversal.
-  * @returns {void} No return value.
-  * @description
-  *   - Uses a queue to track nodes for traversal.
-  *   - Traverses until there are no more nodes in the queue.
-  *   - Applies the callback to each node in sequence.
-  */
-  levelOrderTraversalIterative(callback = (node) => console.log('node', node)) {
+  /**
+   * Performs an iterative level-order traversal of a tree.
+   * @example
+   * levelOrderTraversalIterative(node => console.log(node))
+   * undefined
+   * @param {Function} callback - Function applied to each node during traversal.
+   * @returns {void} No return value.
+   * @description
+   *   - Uses a queue to track nodes for traversal.
+   *   - Traverses until there are no more nodes in the queue.
+   *   - Applies the callback to each node in sequence.
+   */
+  levelOrderTraversalIterative(callback) {
+    if (!callback) throw new Error('needs callback');
     let keepTraversing = true;
     const queueArray = [];
     this.localRoot = this.root;
     pushValidChildren.call(queueArray, this.localRoot);
     while (keepTraversing) {
+      const shiftedItem = queueArray.shift();
+      callback(shiftedItem);
+      pushValidChildren.call(queueArray, shiftedItem);
 
-      const shiftedItem = queueArray.shift()
-      callback(shiftedItem)
-      pushValidChildren.call(queueArray, shiftedItem)
-
-      keepTraversing = queueArray.length > 0
+      keepTraversing = queueArray.length > 0;
     }
+  }
+
+  levelOrderTraversalRecursive() {
+    this.localRoot = this.root
+    if (!callback) throw new Error('needs callback');
+    if(this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN) return
+
+    // base case: NO children
+
+
   }
 
   pushValidChildren(parentNode) {
@@ -300,4 +306,4 @@ tree1.insert(0);
 tree1.prettyPrint(tree1.root);
 // tree1.delete(4500);
 // tree1.prettyPrint(tree1.root);
-tree1.levelOrderTraversalIterative();
+// tree1.levelOrderTraversalIterative();
