@@ -176,7 +176,9 @@ class Tree {
     });
   }
 
-  find(value) {}
+  find(value) {
+    this.itera
+  }
 
   /**
    * Performs an iterative level-order traversal of a tree.
@@ -195,24 +197,64 @@ class Tree {
     let keepTraversing = true;
     const queueArray = [];
     this.localRoot = this.root;
-    pushValidChildren.call(queueArray, this.localRoot);
+    this.pushValidChildren.call(queueArray, this.localRoot);
     while (keepTraversing) {
       const shiftedItem = queueArray.shift();
       callback(shiftedItem);
-      pushValidChildren.call(queueArray, shiftedItem);
+      this.pushValidChildren.call(queueArray, shiftedItem);
 
       keepTraversing = queueArray.length > 0;
     }
   }
 
-  levelOrderTraversalRecursive() {
-    this.localRoot = this.root
+/**
+   * Initiates a recursive level-order traversal on a tree structure.
+   * @example
+   * levelOrderTraversalRecursiveWrapper(callbackFunction, initialQueueArray)
+   * undefined
+   * @param {Function} callback - Function to execute on each node.
+   * @param {Array} queueArray - Queue of nodes for traversal.
+   * @returns {Array} Updated queue array after traversal.
+   * @description
+   *   - Begins traversal with the root node and an optional queue.
+   *   - Throws error if a callback function is not provided.
+   *   - Starts recursive helper function for processing nodes.
+   */
+  levelOrderTraversalRecursiveWrapper(callback, queueArray) {
+    this.localRoot = this.root;
+    if (!queueArray) {
+      queueArray = [];
+      queueArray.push(this.root);
+    }
     if (!callback) throw new Error('needs callback');
-    if(this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN) return
 
-    // base case: NO children
+/**
+     * Performs a level-order traversal on a tree structure.
+     * @example
+     * levelOrderTraversalRecursive(callbackFunction, initialQueueArray)
+     * undefined
+     * @param {Function} callback - Function to execute on each node.
+     * @param {Array} queueArray - Queue of nodes for traversal.
+     * @returns {Array} Updated queue array after traversal.
+     * @description
+     *   - Operates recursively to traverse nodes level by level.
+     *   - Utilizes a queue to manage the order of node processing.
+     *   - Calls a method to handle valid children and appends them to the queue.
+     */
+    const levelOrderTraversalRecursive = (callback, queueArray) => {
+      //BASE CASE
+      if (this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN
+      && queueArray.length === 0
+    ) return queueArray;
 
+      //RECURSIVE CASE
+      this.localRoot = queueArray.shift();
+      callback(this.localRoot);
+      this.pushValidChildren.call(queueArray, this.localRoot);
+      levelOrderTraversalRecursive(callback, queueArray);
+    };
 
+    return levelOrderTraversalRecursive(callback, queueArray);
   }
 
   pushValidChildren(parentNode) {
