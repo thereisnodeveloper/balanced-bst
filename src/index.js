@@ -110,61 +110,60 @@ class Tree {
       return { targetNode, parent: previousNode };
     };
 
-    const deleteCallback = (nodeToGoTo) => {
+    const deleteCallback = (deleteTarget) => {
       // if node has no children, node set to null
-      console.log('nodeToGoTo:', nodeToGoTo);
-      switch (this.checkNodeChildren(nodeToGoTo)) {
+      console.log('nodeToGoTo:', deleteTarget);
+      switch (this.checkNodeChildren(deleteTarget)) {
         case ChildrenType.NO_CHILDREN:
-          nodeToGoTo = null;
+          deleteTarget = null;
           break;
         case ChildrenType.ONLY_LEFT_CHILD:
-          nodeToGoTo = nodeToGoTo.left;
+          deleteTarget = deleteTarget.left;
           break;
         case ChildrenType.ONLY_RIGHT_CHILD:
-          nodeToGoTo = nodeToGoTo.right;
+          deleteTarget = deleteTarget.right;
           break;
         case ChildrenType.BOTH_CHILDREN:
           // find smallest in the right subtree
-          const rightSubtreeStart = nodeToGoTo.right;
+          const rightSubtreeStart = deleteTarget.right;
           var traverseResult = traverseLeft(rightSubtreeStart);
-          let nextLargest = traverseResult.targetNode;
-          // FIXME
-          // check
+          let inorderSuccessor = traverseResult.targetNode;
 
-          switch (this.checkNodeChildren(nextLargest)) {
+
+          switch (this.checkNodeChildren(inorderSuccessor)) {
             case ChildrenType.NO_CHILDREN:
-              // TESTED
-              nodeToGoTo.data = nextLargest.data;
+              deleteTarget.data = inorderSuccessor.data;
               break;
 
             case ChildrenType.ONLY_LEFT_CHILD:
             case ChildrenType.BOTH_CHILDREN:
+              //FIXME: doesn't seem to work for 9
               throw new Error(
                 'should not have happened, inorder successofr should have no   number that is smaller than it ',
               );
-            //! !!
             case ChildrenType.ONLY_RIGHT_CHILD:
-              console.log('nodeToGoTo.right:', nodeToGoTo.right);
-              console.log('nextLargest.right:', nextLargest.right);
-              nodeToGoTo.right.left = nextLargest.right;
+              //FIXME: this is the case that doesn't work
+              console.log('nodeToGoTo.right:', deleteTarget.right);
+              console.log('nextLargest.right:', inorderSuccessor.right);
+              deleteTarget.right.left = inorderSuccessor.right;
 
-              nodeToGoTo.data = nextLargest.data;
+              deleteTarget.data = inorderSuccessor.data;
               // FIXME
 
             default:
-              nodeToGoTo.data = null
+              deleteTarget.data = null
               break;
           }
           // nodeToGoTo = nextLargest;
 
-          nextLargest = null;
+          inorderSuccessor = null;
           traverseResult.parent.left = null; // parent of nextLargest: set its .left to nu
           break;
         default:
           throw new Error('check this error');
       }
 
-      return nodeToGoTo;
+      return deleteTarget;
     };
 
     function conditionCheck(nodeToGoTo) {
@@ -368,6 +367,6 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
-tree1.delete(4500);
+tree1.delete(6345);
 tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
