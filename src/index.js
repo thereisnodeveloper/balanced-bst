@@ -74,8 +74,7 @@ class Tree {
       nodeToGoTo = this.localRoot.right;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-        // ??? why don't i like this version of traverse()?
-        // it's not a full traversal, just travels downwards from the top node
+   
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -369,6 +368,6 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
-// tree1.delete(4500);
-// tree1.prettyPrint(tree1.root);
+tree1.delete(4500);
+tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
