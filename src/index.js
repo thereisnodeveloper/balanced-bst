@@ -74,7 +74,7 @@ class Tree {
       nodeToGoTo = this.localRoot.right;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-   
+
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -111,12 +111,9 @@ class Tree {
     };
 
     const deleteCallback = (deleteTarget) => {
-      // if node has no children, node set to null
-      console.log('nodeToGoTo:', deleteTarget);
-      switch (this.checkNodeChildren(deleteTarget)) {
-        case ChildrenType.NO_CHILDREN:
-          deleteTarget = null;
-          break;
+      console.log('deleteTarget:', deleteTarget);
+      let inorderSuccessor; //smallest node in deleteTarget's right subtree
+      switch (Tree.checkNodeChildren(deleteTarget)) {
         case ChildrenType.ONLY_LEFT_CHILD:
           deleteTarget = deleteTarget.left;
           break;
@@ -124,46 +121,50 @@ class Tree {
           deleteTarget = deleteTarget.right;
           break;
         case ChildrenType.BOTH_CHILDREN:
-          // find smallest in the right subtree
-          const rightSubtreeStart = deleteTarget.right;
-          var traverseResult = traverseLeft(rightSubtreeStart);
-          let inorderSuccessor = traverseResult.targetNode;
-
-
-          switch (this.checkNodeChildren(inorderSuccessor)) {
-            case ChildrenType.NO_CHILDREN:
-              deleteTarget.data = inorderSuccessor.data;
-              break;
-
-            case ChildrenType.ONLY_LEFT_CHILD:
-            case ChildrenType.BOTH_CHILDREN:
-              //FIXME: doesn't seem to work for 9
-              throw new Error(
-                'should not have happened, inorder successofr should have no   number that is smaller than it ',
-              );
-            case ChildrenType.ONLY_RIGHT_CHILD:
-              //FIXME: this is the case that doesn't work
-              console.log('nodeToGoTo.right:', deleteTarget.right);
-              console.log('nextLargest.right:', inorderSuccessor.right);
-              deleteTarget.right.left = inorderSuccessor.right;
-
-              deleteTarget.data = inorderSuccessor.data;
-              // FIXME
-
-            default:
-              deleteTarget.data = null
-              break;
-          }
-          // nodeToGoTo = nextLargest;
-
-          inorderSuccessor = null;
-          traverseResult.parent.left = null; // parent of nextLargest: set its .left to nu
+          //!!! currently checking
+          inorderSuccessor = findInorderSuccessor();
+          console.log('inorderSuccessor:', inorderSuccessor)
+          checkInorderSuccessorChildren(inorderSuccessor);
           break;
         default:
-          throw new Error('check this error');
+          // ChildrenType.NO_CHILDREN:
+          deleteTarget = null;
+          break;
+
+        // inorderSuccessor = null;
+        // traverseResult.parent.left = null;
       }
 
-      return deleteTarget;
+      function findInorderSuccessor() {
+        // find node with smallest value in the right subtree of deleteTarget
+        const rightSubtreeStart = deleteTarget.right;
+        const traverseResult = traverseLeft(rightSubtreeStart);
+        return traverseResult.targetNode;
+      }
+      function checkInorderSuccessorChildren(inorderSuccessor) {
+        switch (Tree.checkNodeChildren(inorderSuccessor)) {
+          case ChildrenType.NO_CHILDREN:
+            deleteTarget.data = inorderSuccessor.data;
+            break;
+
+          case ChildrenType.ONLY_LEFT_CHILD:
+          case ChildrenType.BOTH_CHILDREN:
+            throw new Error(
+              'should not have happened, inorder successofr should have no   number that is smaller than it ',
+            );
+          case ChildrenType.ONLY_RIGHT_CHILD:
+            // console.log('nodeToGoTo.right:', deleteTarget.right);
+            console.log('inorderSuccessor.right:', inorderSuccessor.right);
+            
+            //FIXME: should be assigning the next successor
+            deleteTarget.right.left = inorderSuccessor.right;
+
+            deleteTarget.data = inorderSuccessor.data;
+          default:
+            deleteTarget.data = null;
+            break;
+        }
+      }
     };
 
     function conditionCheck(nodeToGoTo) {
@@ -262,18 +263,17 @@ class Tree {
     const levelOrderTraversalRecursive = (callback, queueArray, exitOnCallback = false) => {
       // BASE CASE
       if (
-        this.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN
+        Tree.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN
         && queueArray.length === 0
       ) return queueArray;
 
       // RECURSIVE CASE
       this.localRoot = queueArray.shift();
       const callbackResult = callback(this.localRoot);
-      if (exitOnCallback && callbackResult) return callbackResult; 
+      if (exitOnCallback && callbackResult) return callbackResult;
       this.pushValidChildren.call(queueArray, this.localRoot);
       return levelOrderTraversalRecursive(callback, queueArray, true);
     };
-    
 
     return levelOrderTraversalRecursive(callback, queueArray, true);
   }
@@ -300,7 +300,7 @@ class Tree {
 
   rebalance() {}
 
-  checkNodeChildren(node) {
+  static checkNodeChildren(node) {
     if (!node.left && !node.right) {
       return ChildrenType.NO_CHILDREN;
     }
@@ -367,6 +367,6 @@ class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
-tree1.delete(6345);
+tree1.delete(9);
 tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
