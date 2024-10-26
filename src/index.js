@@ -139,7 +139,7 @@ class Tree {
         // find node with smallest value in the right subtree of deleteTarget
         const rightSubtreeStart = deleteTarget.right;
         const traverseResult = traverseLeft(rightSubtreeStart);
-        return traverseResult.targetNode;
+        return traverseResult.targetNode
       }
       function checkInorderSuccessorChildren(inorderSuccessor) {
         switch (Tree.checkNodeChildren(inorderSuccessor)) {
@@ -155,7 +155,6 @@ class Tree {
           case ChildrenType.ONLY_RIGHT_CHILD:
             // console.log('nodeToGoTo.right:', deleteTarget.right);
             console.log('inorderSuccessor.right:', inorderSuccessor.right);
-            
             //FIXME: should be assigning the next successor
             deleteTarget.right.left = inorderSuccessor.right;
 
@@ -165,6 +164,7 @@ class Tree {
             break;
         }
       }
+      return deleteTarget
     };
 
     function conditionCheck(nodeToGoTo) {
