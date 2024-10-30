@@ -24,9 +24,7 @@ class Tree {
   }
 
   traverse(config) {
-    const {
-      value, callback, stopConditionMet, ignoreDuplicates = false,
-    } = config;
+    const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
     // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
     // ignore duplicates
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
@@ -115,56 +113,64 @@ class Tree {
       let inorderSuccessor; //smallest node in deleteTarget's right subtree
       switch (Tree.checkNodeChildren(deleteTarget)) {
         case ChildrenType.ONLY_LEFT_CHILD:
+          console.log('Case deleteTarget has triggered: ONLY_LEFT_CHILD');
           deleteTarget = deleteTarget.left;
           break;
         case ChildrenType.ONLY_RIGHT_CHILD:
+          console.log('Case triggered: deleteTarget has ONLY_RIGHT_CHILD');
           deleteTarget = deleteTarget.right;
           break;
         case ChildrenType.BOTH_CHILDREN:
-          //!!! currently checking
+          console.log('Case triggered: deleteTarget has BOTH_CHILDREN');
           inorderSuccessor = findInorderSuccessor();
-          console.log('inorderSuccessor:', inorderSuccessor)
+          console.log('inorderSuccessor:', inorderSuccessor);
           checkInorderSuccessorChildren(inorderSuccessor);
           break;
         default:
-          // ChildrenType.NO_CHILDREN:
-          deleteTarget = null;
-          break;
-
-        // inorderSuccessor = null;
-        // traverseResult.parent.left = null;
+          console.log('Case triggered: deleteTarget has NO_CHILDREN (default)');
+        // ChildrenType.NO_CHILDREN:
       }
 
       function findInorderSuccessor() {
         // find node with smallest value in the right subtree of deleteTarget
         const rightSubtreeStart = deleteTarget.right;
         const traverseResult = traverseLeft(rightSubtreeStart);
-        return traverseResult.targetNode
+        return traverseResult.targetNode;
       }
       function checkInorderSuccessorChildren(inorderSuccessor) {
         switch (Tree.checkNodeChildren(inorderSuccessor)) {
-          case ChildrenType.NO_CHILDREN:
-            deleteTarget.data = inorderSuccessor.data;
-            break;
-
           case ChildrenType.ONLY_LEFT_CHILD:
+            console.log('Case triggered for inorderSuccessor: ONLY_LEFT_CHILD');
+            break;
           case ChildrenType.BOTH_CHILDREN:
+            console.log('Case triggered for inorderSuccessor: BOTH_CHILDREN');
             throw new Error(
-              'should not have happened, inorder successofr should have no   number that is smaller than it ',
+              'should not have happened, inorder successofr should have no   number that is smaller than it '
             );
+            break;
           case ChildrenType.ONLY_RIGHT_CHILD:
+            console.log('Case triggered for inorderSuccessor: ONLY_RIGHT_CHILD');
+            console.log('inorderSuccessor has ONLY right child');
             // console.log('nodeToGoTo.right:', deleteTarget.right);
             console.log('inorderSuccessor.right:', inorderSuccessor.right);
             //FIXME: should be assigning the next successor
             deleteTarget.right.left = inorderSuccessor.right;
 
+            // deleteTarget.right = assignChildToLeftOrRight(deleteTarget.right)
+            // function assignChildToLeftOrRight(replacementForDeleteTarget, inorderSuccessor.right){
+            //   if (replacementForDeleteTarget)
+            // }
+
             deleteTarget.data = inorderSuccessor.data;
-          default:
-            deleteTarget.data = null;
             break;
+          default:
+            console.log('Case triggered for inorderSuccessor: NO_CHILDREN (default)');
+            console.log('inorderSuccessor has NO children');
+            //  ChildrenType.NO_CHILDREN:
+            deleteTarget.data = inorderSuccessor.data;
         }
       }
-      return deleteTarget
+      return deleteTarget;
     };
 
     function conditionCheck(nodeToGoTo) {
@@ -263,9 +269,10 @@ class Tree {
     const levelOrderTraversalRecursive = (callback, queueArray, exitOnCallback = false) => {
       // BASE CASE
       if (
-        Tree.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN
-        && queueArray.length === 0
-      ) return queueArray;
+        Tree.checkNodeChildren(this.localRoot) === ChildrenType.NO_CHILDREN &&
+        queueArray.length === 0
+      )
+        return queueArray;
 
       // RECURSIVE CASE
       this.localRoot = queueArray.shift();
