@@ -17,7 +17,7 @@ const TraverseCondition = {
   NUMERIC: 'numeric',
 };
 
-class Tree {
+export class Tree {
   constructor(array) {
     this.root = this.buildTree(array);
     this.localRoot = this.root;
