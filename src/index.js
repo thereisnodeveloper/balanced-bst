@@ -17,7 +17,7 @@ const TraverseCondition = {
   NUMERIC: 'numeric',
 };
 
-export class Tree {
+export default class Tree {
   constructor(array) {
     this.root = this.buildTree(array);
     this.localRoot = this.root;
@@ -219,7 +219,7 @@ export class Tree {
     let keepTraversing = true;
     const queueArray = [];
     this.localRoot = this.root;
-    this.pushValidChildren.call(queueArray, this.localRoot);
+    if (queueArray.length === 0) queueArray.push(this.localRoot);
     while (keepTraversing) {
       const shiftedItem = queueArray.shift();
       const callBackResult = callback(shiftedItem);
@@ -375,5 +375,10 @@ const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
 tree1.delete(9);
-tree1.prettyPrint(tree1.root);
+// tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
+
+const bstToArray = [];
+// call traversal, save result to array
+tree1.levelOrderTraversalIterative((node) => bstToArray.push(node));
+console.log('bstToArray:', bstToArray);
