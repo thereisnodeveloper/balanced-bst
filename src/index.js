@@ -14,7 +14,7 @@ const ChildrenType = {
 const TraverseCondition = {
   LEFT: 'left',
   RIGHT: 'right',
-  NUMERIC: 'numeric',
+  SENTINEL_VALUE: 'sentinel',
 };
 
 export default class Tree {
@@ -25,14 +25,12 @@ export default class Tree {
 
   traverse(config) {
     const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
-    // if (typeof this.localRoot === 'undefined') this.localRoot = this.root;v
-    // ignore duplicates
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
     if (!ignoreDuplicates && value === this.localRoot.data) {
       throw new Error('duplicate value');
     }
 
-    const shouldGoLeft = (staticCondition = null, criterion = TraverseCondition.NUMERIC) => {
+    const shouldGoLeft = (staticCondition = null, criterion = TraverseCondition.SENTINEL_VALUE) => {
       if (staticCondition) {
         if (staticCondition === TraverseCondition.LEFT) {
           return true;
@@ -41,7 +39,7 @@ export default class Tree {
       }
 
       // if larger, go to right child
-      if (criterion === TraverseCondition.NUMERIC) {
+      if (criterion === TraverseCondition.SENTINEL_VALUE) {
         if (value > this.localRoot.data) {
           return false;
         }
@@ -50,7 +48,11 @@ export default class Tree {
       }
     };
 
+    //VISIT root node
     let nodeToGoTo;
+
+
+
     // determine if we need to go left or right
     if (shouldGoLeft()) {
       nodeToGoTo = this.localRoot.left;
@@ -104,7 +106,7 @@ export default class Tree {
 
         targetNode = targetNode.left;
       }
-      console.log('previousNode:', previousNode);
+      // console.log('previousNode:', previousNode);
       return { targetNode, parent: previousNode };
     };
 
@@ -141,7 +143,6 @@ export default class Tree {
         switch (Tree.checkNodeChildren(inorderSuccessor)) {
           case ChildrenType.ONLY_LEFT_CHILD:
             console.log('Case triggered for inorderSuccessor: ONLY_LEFT_CHILD');
-            break;
           case ChildrenType.BOTH_CHILDREN:
             console.log('Case triggered for inorderSuccessor: BOTH_CHILDREN');
             throw new Error(
@@ -151,17 +152,14 @@ export default class Tree {
           case ChildrenType.ONLY_RIGHT_CHILD:
             console.log('Case triggered for inorderSuccessor: ONLY_RIGHT_CHILD');
             console.log('inorderSuccessor has ONLY right child');
-            // console.log('nodeToGoTo.right:', deleteTarget.right);
             console.log('inorderSuccessor.right:', inorderSuccessor.right);
-            //FIXME: should be assigning the next successor
-            deleteTarget.right.left = inorderSuccessor.right;
 
-            // deleteTarget.right = assignChildToLeftOrRight(deleteTarget.right)
-            // function assignChildToLeftOrRight(replacementForDeleteTarget, inorderSuccessor.right){
-            //   if (replacementForDeleteTarget)
-            // }
 
-            deleteTarget.data = inorderSuccessor.data;
+            //SAVE deleteTarget's left child before it gets deleted
+            const deleteTargetLeftChild = deleteTarget.left;
+
+            deleteTarget = inorderSuccessor;
+            deleteTarget.left = deleteTargetLeftChild;
             break;
           default:
             console.log('Case triggered for inorderSuccessor: NO_CHILDREN (default)');
@@ -374,11 +372,84 @@ export default class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
+//case where inorder successor is direct child of deleteTarget
+// tree1.delete(9);
+
 tree1.delete(9);
-// tree1.prettyPrint(tree1.root);
+
+tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
 
-const bstToArray = [];
-// call traversal, save result to array
-tree1.levelOrderTraversalIterative((node) => bstToArray.push(node));
-console.log('bstToArray:', bstToArray);
+
+//case
+//deleteTarget has ...
+//left child
+//right child
+//both child
+
+
+//deleteTarget vs. inorderSuccessor
+//case: inorderSuccessor is direct child
+
+//inorderSuccessor is NOT a direct child
+
+
+//delete root
+
+
+// Test cases for Tree.delete() method
+console.log("\n--- Testing Tree.delete() method ---");
+
+// Test case 1: Deleting a node with both children
+const testTree1 = new Tree([10, 5, 15, 3, 7, 12, 18]);
+console.log("Original tree:");
+testTree1.prettyPrint(testTree1.root);
+
+console.log("\nDeleting node with value 10 (root):");
+testTree1.delete(10);
+testTree1.prettyPrint(testTree1.root);
+
+// Test case 2: Deleting a leaf node
+const testTree2 = new Tree([10, 5, 15, 3, 7, 12, 18]);
+console.log("\nOriginal tree:");
+testTree2.prettyPrint(testTree2.root);
+
+console.log("\nDeleting node with value 3 (leaf):");
+testTree2.delete(3);
+testTree2.prettyPrint(testTree2.root);
+
+// Test case 3: Deleting a node with only right child
+const testTree3 = new Tree([10, 5, 15, 7, 12, 18]);
+console.log("\nOriginal tree:");
+testTree3.prettyPrint(testTree3.root);
+
+console.log("\nDeleting node with value 5 (only right child):");
+testTree3.delete(5);
+testTree3.prettyPrint(testTree3.root);
+
+// Test case 4: Deleting a node with only left child
+const testTree4 = new Tree([10, 5, 15, 3, 12, 18]);
+console.log("\nOriginal tree:");
+testTree4.prettyPrint(testTree4.root);
+
+console.log("\nDeleting node with value 5 (only left child):");
+testTree4.delete(5);
+testTree4.prettyPrint(testTree4.root);
+
+// Helper function to check if the tree is still a valid BST
+function isBST(node, min = null, max = null) {
+  if (node === null) return true;
+  
+  if ((min !== null && node.data <= min) || (max !== null && node.data >= max)) {
+    return false;
+  }
+  
+  return isBST(node.left, min, node.data) && isBST(node.right, node.data, max);
+}
+
+// Check if all test trees are still valid BSTs after deletion
+console.log("\nChecking if trees are still valid BSTs after deletion:");
+console.log("Test Tree 1 is a valid BST:", isBST(testTree1.root));
+console.log("Test Tree 2 is a valid BST:", isBST(testTree2.root));
+console.log("Test Tree 3 is a valid BST:", isBST(testTree3.root));
+console.log("Test Tree 4 is a valid BST:", isBST(testTree4.root));
