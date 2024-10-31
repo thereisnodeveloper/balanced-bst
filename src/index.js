@@ -23,7 +23,26 @@ export default class Tree {
     this.localRoot = this.root;
   }
 
-  traverse(config) {
+  /**
+   * Navigates the binary search tree to perform operations based on the provided configuration.
+   * 
+   * @param {Object} config - Configuration object .
+   * @param {*} config.value - The value to be used in the callback function  (e.g., for insertion or deletion).
+   * @param {Function} config.callback - Function to be called when the target node is found.
+   * @param {Function} config.stopConditionMet - Function that determines when to stop the navigation.
+   * @param {boolean} [config.ignoreDuplicates=false] - Whether to ignore duplicate values during navigation.
+   * 
+   * @throws {Error} Throws an error if a duplicate value is encountered and ignoreDuplicates is false.
+   * 
+   * @returns {Node} Returns the root node of the tree after the navigation operation.
+   * 
+   * @description
+   * This method travels the binary search tree recursively, moving left or right based on the value
+   * being searched for. It uses the provided callback and stop condition to perform operations
+   * (such as insertion or deletion) at the appropriate node. The method maintains a 'localRoot'
+   * to keep track of the current position in the tree during travel.
+   */
+  navigateTreeAndExecute(config) {
     const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
     // FIXME: this ignoreDuplicates doesn't do what I think it should do
     if (!ignoreDuplicates && value === this.localRoot.data) {
@@ -67,7 +86,7 @@ export default class Tree {
       }
       // recursive case
       this.localRoot = nodeToGoTo;
-      this.traverse(config);
+      this.navigateTreeAndExecute(config);
       // if we go right...
     } else {
       // go to the right instead
@@ -83,7 +102,7 @@ export default class Tree {
       }
       // recursive case
       this.localRoot = nodeToGoTo;
-      this.traverse(config);
+      this.navigateTreeAndExecute(config);
     }
   }
 
@@ -95,7 +114,7 @@ export default class Tree {
     function conditionCheck(nodeToGoTo) {
       return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
     }
-    this.traverse({ value, callback: insertCallback, stopConditionMet: conditionCheck });
+    this.navigateTreeAndExecute({ value, callback: insertCallback, stopConditionMet: conditionCheck });
   }
 
   delete(value) {
@@ -174,7 +193,7 @@ export default class Tree {
     function conditionCheck(nodeToGoTo) {
       return nodeToGoTo.data === value;
     }
-    this.traverse({
+    this.navigateTreeAndExecute({
       value,
       callback: deleteCallback,
       stopConditionMet: conditionCheck,
