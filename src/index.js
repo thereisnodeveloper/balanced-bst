@@ -25,17 +25,17 @@ export default class Tree {
 
   /**
    * Navigates the binary search tree to perform operations based on the provided configuration.
-   * 
+   *
    * @param {Object} config - Configuration object .
    * @param {*} config.value - The value to be used in the callback function  (e.g., for insertion or deletion).
    * @param {Function} config.callback - Function to be called when the target node is found.
    * @param {Function} config.stopConditionMet - Function that determines when to stop the navigation.
    * @param {boolean} [config.ignoreDuplicates=false] - Whether to ignore duplicate values during navigation.
-   * 
+   *
    * @throws {Error} Throws an error if a duplicate value is encountered and ignoreDuplicates is false.
-   * 
+   *
    * @returns {Node} Returns the root node of the tree after the navigation operation.
-   * 
+   *
    * @description
    * This method travels the binary search tree recursively, moving left or right based on the value
    * being searched for. It uses the provided callback and stop condition to perform operations
@@ -43,10 +43,29 @@ export default class Tree {
    * to keep track of the current position in the tree during travel.
    */
   navigateTreeAndExecute(config) {
-    const { value, callback, stopConditionMet, ignoreDuplicates = false } = config;
-    // FIXME: this ignoreDuplicates doesn't do what I think it should do
-    if (!ignoreDuplicates && value === this.localRoot.data) {
+    //practicing how to use rest
+    let {
+      // parent = null,
+      ...rest
+    } = config;
+    const {
+      value,
+      callback,
+      stopConditionMet,
+      ignoreDuplicates: ignoreDuplicateValuesInTree = false,
+    } = rest;
+    if (!ignoreDuplicateValuesInTree && value === this.localRoot.data) {
       throw new Error('duplicate value');
+    }
+
+    // visit & check root node against condition
+    if (stopConditionMet(this.localRoot)) {
+      // base case
+      this.localRoot = callback(this.localRoot);
+      // this.localRoot.left = nodeToGoTo;
+      // reset localRoot for next method call before exiting
+      this.localRoot = this.root;
+      return this.root;
     }
 
     const shouldGoLeft = (staticCondition = null, criterion = TraverseCondition.SENTINEL_VALUE) => {
@@ -67,17 +86,16 @@ export default class Tree {
       }
     };
 
-    //VISIT root node
     let nodeToGoTo;
 
-
-
-    // determine if we need to go left or right
+    // determine whether to go to the left or right child node
     if (shouldGoLeft()) {
+      // config.parent = this.localRoot
+      // parent = this.localRoot
+      this.parentNode = this.localRoot
       nodeToGoTo = this.localRoot.left;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-        // callback is used to perform operations on the target node
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.left = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -90,10 +108,13 @@ export default class Tree {
       // if we go right...
     } else {
       // go to the right instead
+      // config.parent = this.localRoot
+      // parent = this.localRoot
+      this.parentNode = this.localRoot
+
       nodeToGoTo = this.localRoot.right;
       if (stopConditionMet(nodeToGoTo)) {
         // base case
-
         nodeToGoTo = callback(nodeToGoTo);
         this.localRoot.right = nodeToGoTo;
         // reset localRoot for next method call before exiting
@@ -111,10 +132,14 @@ export default class Tree {
       nodeToGoTo = new Node(value);
       return nodeToGoTo;
     }
-    function conditionCheck(nodeToGoTo) {
+    function stopConditionCheck(nodeToGoTo) {
       return typeof nodeToGoTo === 'undefined' || nodeToGoTo === null;
     }
-    this.navigateTreeAndExecute({ value, callback: insertCallback, stopConditionMet: conditionCheck });
+    this.navigateTreeAndExecute({
+      value,
+      callback: insertCallback,
+      stopConditionMet: stopConditionCheck,
+    });
   }
 
   delete(value) {
@@ -131,7 +156,7 @@ export default class Tree {
 
     const deleteCallback = (deleteTarget) => {
       console.log('deleteTarget:', deleteTarget);
-      let inorderSuccessor; //smallest node in deleteTarget's right subtree
+      let inorderSuccessor; // smallest node in deleteTarget's right subtree
       switch (Tree.checkNodeChildren(deleteTarget)) {
         case ChildrenType.ONLY_LEFT_CHILD:
           console.log('Case deleteTarget has triggered: ONLY_LEFT_CHILD');
@@ -145,7 +170,7 @@ export default class Tree {
           console.log('Case triggered: deleteTarget has BOTH_CHILDREN');
           inorderSuccessor = findInorderSuccessor();
           console.log('inorderSuccessor:', inorderSuccessor);
-          checkInorderSuccessorChildren(inorderSuccessor);
+          checkSuccessorChildrenAndPerformDelete(inorderSuccessor);
           break;
         default:
           console.log('Case triggered: deleteTarget has NO_CHILDREN (default)');
@@ -158,14 +183,14 @@ export default class Tree {
         const traverseResult = traverseLeft(rightSubtreeStart);
         return traverseResult.targetNode;
       }
-      function checkInorderSuccessorChildren(inorderSuccessor) {
+      function checkSuccessorChildrenAndPerformDelete(inorderSuccessor,parentNode) {
         switch (Tree.checkNodeChildren(inorderSuccessor)) {
           case ChildrenType.ONLY_LEFT_CHILD:
             console.log('Case triggered for inorderSuccessor: ONLY_LEFT_CHILD');
           case ChildrenType.BOTH_CHILDREN:
             console.log('Case triggered for inorderSuccessor: BOTH_CHILDREN');
             throw new Error(
-              'should not have happened, inorder successofr should have no   number that is smaller than it '
+              'should not have happened, inorder successor should have no   number that is smaller than it (meaning no left child)'
             );
             break;
           case ChildrenType.ONLY_RIGHT_CHILD:
@@ -173,30 +198,34 @@ export default class Tree {
             console.log('inorderSuccessor has ONLY right child');
             console.log('inorderSuccessor.right:', inorderSuccessor.right);
 
-
-            //SAVE deleteTarget's left child before it gets deleted
+            // SAVE deleteTarget's left child before it gets deleted
             const deleteTargetLeftChild = deleteTarget.left;
-
+            //!!! I can do this recursively, not sure about the difference.
             deleteTarget = inorderSuccessor;
             deleteTarget.left = deleteTargetLeftChild;
+
             break;
           default:
             console.log('Case triggered for inorderSuccessor: NO_CHILDREN (default)');
             console.log('inorderSuccessor has NO children');
             //  ChildrenType.NO_CHILDREN:
+            //FIXME: this doesn't delete the inordersuccessor
             deleteTarget.data = inorderSuccessor.data;
+        // console.log('parent:', parent)
+console.log('this.parentNode:', this.parentNode)
+
         }
       }
       return deleteTarget;
     };
 
-    function conditionCheck(nodeToGoTo) {
+    function stopConditionCheck(nodeToGoTo) {
       return nodeToGoTo.data === value;
     }
     this.navigateTreeAndExecute({
       value,
       callback: deleteCallback,
-      stopConditionMet: conditionCheck,
+      stopConditionMet: stopConditionCheck,
       ignoreDuplicates: true,
     });
   }
@@ -391,7 +420,7 @@ export default class Tree {
 const tree1 = new Tree(sampleArray2);
 tree1.insert(0);
 tree1.prettyPrint(tree1.root);
-//case where inorder successor is direct child of deleteTarget
+// case where inorder successor is direct child of deleteTarget
 // tree1.delete(9);
 
 tree1.delete(9);
@@ -399,76 +428,72 @@ tree1.delete(9);
 tree1.prettyPrint(tree1.root);
 // tree1.levelOrderTraversalIterative();
 
+// case
+// deleteTarget has ...
+// left child
+// right child
+// both child
 
-//case
-//deleteTarget has ...
-//left child
-//right child
-//both child
+// deleteTarget vs. inorderSuccessor
+// case: inorderSuccessor is direct child
 
+// inorderSuccessor is NOT a direct child
 
-//deleteTarget vs. inorderSuccessor
-//case: inorderSuccessor is direct child
-
-//inorderSuccessor is NOT a direct child
-
-
-//delete root
-
+// delete root
 
 // Test cases for Tree.delete() method
-console.log("\n--- Testing Tree.delete() method ---");
+console.log('\n--- Testing Tree.delete() method ---');
 
 // Test case 1: Deleting a node with both children
 const testTree1 = new Tree([10, 5, 15, 3, 7, 12, 18]);
-console.log("Original tree:");
+console.log('Original tree:');
 testTree1.prettyPrint(testTree1.root);
 
-console.log("\nDeleting node with value 10 (root):");
+console.log('\nDeleting node with value 10 (root):');
 testTree1.delete(10);
 testTree1.prettyPrint(testTree1.root);
 
 // Test case 2: Deleting a leaf node
 const testTree2 = new Tree([10, 5, 15, 3, 7, 12, 18]);
-console.log("\nOriginal tree:");
+console.log('\nOriginal tree:');
 testTree2.prettyPrint(testTree2.root);
 
-console.log("\nDeleting node with value 3 (leaf):");
+console.log('\nDeleting node with value 3 (leaf):');
 testTree2.delete(3);
 testTree2.prettyPrint(testTree2.root);
 
 // Test case 3: Deleting a node with only right child
 const testTree3 = new Tree([10, 5, 15, 7, 12, 18]);
-console.log("\nOriginal tree:");
+console.log('\nOriginal tree:');
 testTree3.prettyPrint(testTree3.root);
 
-console.log("\nDeleting node with value 5 (only right child):");
+console.log('\nDeleting node with value 5 (only right child):');
 testTree3.delete(5);
 testTree3.prettyPrint(testTree3.root);
 
 // Test case 4: Deleting a node with only left child
 const testTree4 = new Tree([10, 5, 15, 3, 12, 18]);
-console.log("\nOriginal tree:");
+console.log('\nOriginal tree:');
 testTree4.prettyPrint(testTree4.root);
 
-console.log("\nDeleting node with value 5 (only left child):");
+console.log('\nDeleting node with value 5 (only left child):');
 testTree4.delete(5);
 testTree4.prettyPrint(testTree4.root);
 
 // Helper function to check if the tree is still a valid BST
 function isBST(node, min = null, max = null) {
   if (node === null) return true;
-  
+
   if ((min !== null && node.data <= min) || (max !== null && node.data >= max)) {
     return false;
   }
-  
+
   return isBST(node.left, min, node.data) && isBST(node.right, node.data, max);
 }
 
 // Check if all test trees are still valid BSTs after deletion
-console.log("\nChecking if trees are still valid BSTs after deletion:");
-console.log("Test Tree 1 is a valid BST:", isBST(testTree1.root));
-console.log("Test Tree 2 is a valid BST:", isBST(testTree2.root));
-console.log("Test Tree 3 is a valid BST:", isBST(testTree3.root));
-console.log("Test Tree 4 is a valid BST:", isBST(testTree4.root));
+console.log('\nChecking if trees are still valid BSTs after deletion:');
+console.log('Test Tree 1 is a valid BST:', isBST(testTree1.root));
+console.log('Test Tree 2 is a valid BST:', isBST(testTree2.root));
+console.log('Test Tree 3 is a valid BST:', isBST(testTree3.root));
+console.log('Test Tree 4 is a valid BST:', isBST(testTree4.root));
